@@ -1,6 +1,7 @@
 package com.dungeontasks.quest.repository;
 
 import static com.dungeontasks.common.persistence.DatabaseTables.COMPLETION_COMPLETED_AT;
+import static com.dungeontasks.common.persistence.DatabaseTables.COMPLETION_LOOT_USER_ITEM_ID;
 import static com.dungeontasks.common.persistence.DatabaseTables.COMPLETION_GOLD_EARNED;
 import static com.dungeontasks.common.persistence.DatabaseTables.COMPLETION_HITS_JSON;
 import static com.dungeontasks.common.persistence.DatabaseTables.COMPLETION_ID;
@@ -45,7 +46,8 @@ public class QuestCompletionRepository {
             int levelAfter,
             String monsterType,
             int monsterMaxHp,
-            List<Integer> hits
+            List<Integer> hits,
+            UUID lootUserItemID
     ) {
     }
 
@@ -53,7 +55,7 @@ public class QuestCompletionRepository {
         Record record = dsl.select(
                         COMPLETION_QUEST_ID, COMPLETION_USER_ID, COMPLETION_XP_EARNED, COMPLETION_GOLD_EARNED,
                         COMPLETION_LEVEL_BEFORE, COMPLETION_LEVEL_AFTER, COMPLETION_MONSTER_TYPE,
-                        COMPLETION_MONSTER_MAX_HP, COMPLETION_HITS_JSON
+                        COMPLETION_MONSTER_MAX_HP, COMPLETION_HITS_JSON, COMPLETION_LOOT_USER_ITEM_ID
                 )
                 .from(QUEST_COMPLETION)
                 .where(COMPLETION_QUEST_ID.eq(questID))
@@ -80,7 +82,8 @@ public class QuestCompletionRepository {
                 record.get(COMPLETION_LEVEL_AFTER),
                 record.get(COMPLETION_MONSTER_TYPE),
                 record.get(COMPLETION_MONSTER_MAX_HP),
-                hits
+                hits,
+                record.get(COMPLETION_LOOT_USER_ITEM_ID)
         ));
     }
 
@@ -94,6 +97,7 @@ public class QuestCompletionRepository {
             String monsterType,
             int monsterMaxHp,
             List<Integer> hits,
+            UUID lootUserItemID,
             Instant now
     ) {
         String hitsJson;
@@ -108,13 +112,13 @@ public class QuestCompletionRepository {
                         COMPLETION_ID, COMPLETION_QUEST_ID, COMPLETION_USER_ID, COMPLETION_XP_EARNED,
                         COMPLETION_GOLD_EARNED, COMPLETION_LEVEL_BEFORE, COMPLETION_LEVEL_AFTER,
                         COMPLETION_MONSTER_TYPE, COMPLETION_MONSTER_MAX_HP, COMPLETION_HITS_JSON,
-                        COMPLETION_COMPLETED_AT
+                        COMPLETION_LOOT_USER_ITEM_ID, COMPLETION_COMPLETED_AT
                 )
                 .values(
                         UUID.randomUUID(), questID, userID, xpEarned,
                         goldEarned, levelBefore, levelAfter,
                         monsterType, monsterMaxHp, hitsJson,
-                        OffsetDateTime.now(ZoneOffset.UTC)
+                        lootUserItemID, OffsetDateTime.now(ZoneOffset.UTC)
                 )
                 .execute();
     }

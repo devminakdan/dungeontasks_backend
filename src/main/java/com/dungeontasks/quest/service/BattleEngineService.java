@@ -11,6 +11,12 @@ import com.dungeontasks.quest.domain.Quest;
 import com.dungeontasks.quest.domain.QuestStatus;
 import com.dungeontasks.quest.dto.response.BattleResultResponse;
 import com.dungeontasks.quest.dto.response.MonsterResponse;
+import com.dungeontasks.inventory.domain.ItemDefinition;
+import com.dungeontasks.inventory.domain.ItemRarity;
+import com.dungeontasks.inventory.dto.response.ItemResponse;
+import com.dungeontasks.inventory.repository.InventoryRepository;
+import com.dungeontasks.inventory.service.InventoryService;
+import com.dungeontasks.inventory.service.LootDropService;
 import com.dungeontasks.quest.repository.QuestCompletionRepository;
 import com.dungeontasks.quest.repository.QuestRepository;
 import java.time.Instant;
@@ -27,17 +33,26 @@ public class BattleEngineService {
     private final CharacterRepository characterRepository;
     private final QuestCompletionRepository completionRepository;
     private final CharacterService characterService;
+    private final InventoryRepository inventoryRepository;
+    private final LootDropService lootDropService;
+    private final InventoryService inventoryService;
 
     public BattleEngineService(
             QuestRepository questRepository,
             CharacterRepository characterRepository,
             QuestCompletionRepository completionRepository,
-            CharacterService characterService
+            CharacterService characterService,
+            InventoryRepository inventoryRepository,
+            LootDropService lootDropService,
+            InventoryService inventoryService
     ) {
         this.questRepository = questRepository;
         this.characterRepository = characterRepository;
         this.completionRepository = completionRepository;
         this.characterService = characterService;
+        this.inventoryRepository = inventoryRepository;
+        this.lootDropService = lootDropService;
+        this.inventoryService = inventoryService;
     }
 
     @Transactional
@@ -61,6 +76,10 @@ public class BattleEngineService {
             MonsterResponse monster = new MonsterResponse(
                     monsterName(completion.monsterType()), completion.monsterType(), completion.monsterMaxHp()
             );
+            ItemResponse loot = null;
+            if (completion.lootUserItemID() != null) {
+                loot = inventoryService.get(currentUserID, completion.lootUserItemID());
+            }
             return new BattleResultResponse(
                     questID,
                     completion.xpEarned(),
@@ -70,6 +89,7 @@ public class BattleEngineService {
                     completion.levelAfter() > completion.levelBefore(),
                     monster,
                     completion.hits(),
+                    loot,
                     characterResponse
             );
         }
@@ -114,6 +134,16 @@ public class BattleEngineService {
         );
         characterRepository.updateCharacter(updated, now);
 
+        UUID lootUserItemID = null;
+        ItemResponse loot = null;
+        if (lootDropService.shouldDrop(quest.difficulty().name())) {
+            ItemRarity rarity = lootDropService.rollRarity(quest.difficulty().name());
+            ItemDefinition item = lootDropService.pickItem(rarity, inventoryRepository.findAllDefinitions());
+            var userItem = inventoryRepository.insertUserItem(currentUserID, item.itemID(), now);
+            lootUserItemID = userItem.userItemID();
+            loot = inventoryService.toResponse(userItem);
+        }
+
         questRepository.markCompleted(questID, now);
         completionRepository.insert(
                 questID,
@@ -125,6 +155,7 @@ public class BattleEngineService {
                 reward.monsterType,
                 reward.maxHp,
                 reward.hits,
+                lootUserItemID,
                 now
         );
 
@@ -141,6 +172,7 @@ public class BattleEngineService {
                 levelUp,
                 monster,
                 reward.hits,
+                loot,
                 characterResponse
         );
     }

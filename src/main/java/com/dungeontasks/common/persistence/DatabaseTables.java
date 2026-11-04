@@ -95,6 +95,25 @@ public final class DatabaseTables {
     public static final Field<String> COMPLETION_HITS_JSON = DSL.field(DSL.name("quest_completion", "hits_json"), SQLDataType.CLOB);
     public static final Field<OffsetDateTime> COMPLETION_COMPLETED_AT = DSL.field(
             DSL.name("quest_completion", "completed_at"), SQLDataType.OFFSETDATETIME);
+    public static final Field<UUID> COMPLETION_LOOT_USER_ITEM_ID = DSL.field(
+            DSL.name("quest_completion", "loot_user_item_id"), SQLDataType.UUID);
+
+    public static final Table<?> ITEM_DEFINITION = DSL.table(DSL.name("item_definition"));
+    public static final Field<UUID> ITEM_ID = DSL.field(DSL.name("item_definition", "item_id"), SQLDataType.UUID);
+    public static final Field<String> ITEM_NAME = DSL.field(DSL.name("item_definition", "name"), SQLDataType.VARCHAR);
+    public static final Field<String> ITEM_DESCRIPTION = DSL.field(DSL.name("item_definition", "description"), SQLDataType.CLOB);
+    public static final Field<String> ITEM_RARITY = DSL.field(DSL.name("item_definition", "rarity"), SQLDataType.VARCHAR);
+    public static final Field<String> ITEM_TYPE = DSL.field(DSL.name("item_definition", "type"), SQLDataType.VARCHAR);
+    public static final Field<Integer> ITEM_ATTACK_BONUS = DSL.field(DSL.name("item_definition", "attack_bonus"), SQLDataType.INTEGER);
+    public static final Field<Integer> ITEM_DEFENSE_BONUS = DSL.field(DSL.name("item_definition", "defense_bonus"), SQLDataType.INTEGER);
+    public static final Field<Integer> ITEM_LUCK_BONUS = DSL.field(DSL.name("item_definition", "luck_bonus"), SQLDataType.INTEGER);
+
+    public static final Table<?> USER_ITEM = DSL.table(DSL.name("user_item"));
+    public static final Field<UUID> USER_ITEM_ID = DSL.field(DSL.name("user_item", "user_item_id"), SQLDataType.UUID);
+    public static final Field<UUID> USER_ITEM_USER_ID = DSL.field(DSL.name("user_item", "user_id"), SQLDataType.UUID);
+    public static final Field<UUID> USER_ITEM_ITEM_ID = DSL.field(DSL.name("user_item", "item_id"), SQLDataType.UUID);
+    public static final Field<Boolean> USER_ITEM_IS_EQUIPPED = DSL.field(DSL.name("user_item", "is_equipped"), SQLDataType.BOOLEAN);
+    public static final Field<OffsetDateTime> USER_ITEM_OBTAINED_AT = DSL.field(DSL.name("user_item", "obtained_at"), SQLDataType.OFFSETDATETIME);
 
     private DatabaseTables() {
     }
