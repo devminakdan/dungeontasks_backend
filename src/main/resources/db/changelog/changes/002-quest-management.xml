@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="002-quest-management" author="dungeontasks">
+        <createTable tableName="quest">
+            <column name="quest_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_quest"/>
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="varchar(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="difficulty" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deadline" type="timestamp with time zone"/>
+            <column name="status" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="completed_at" type="timestamp with time zone"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="quest" baseColumnNames="user_id"
+                                 referencedTableName="app_user" referencedColumnNames="user_id"
+                                 constraintName="fk_quest_user" onDelete="CASCADE"/>
+
+        <createIndex tableName="quest" indexName="ix_quest_user_status">
+            <column name="user_id"/>
+            <column name="status"/>
+        </createIndex>
+
+        <sql>
+            ALTER TABLE quest ADD CONSTRAINT ck_quest_difficulty
+            CHECK (difficulty IN ('EASY', 'MEDIUM', 'HARD', 'EPIC'));
+
+            ALTER TABLE quest ADD CONSTRAINT ck_quest_category
+            CHECK (category IN ('STUDY', 'WORK', 'FITNESS', 'PERSONAL', 'OTHER'));
+
+            ALTER TABLE quest ADD CONSTRAINT ck_quest_status
+            CHECK (status IN ('ACTIVE', 'COMPLETED', 'EXPIRED', 'CANCELLED'));
+        </sql>
+    </changeSet>
+</databaseChangeLog>

@@ -10,5 +10,15 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
 
+app:
+  auth:
+    issuer: ${JWT_ISSUER:dungeontasks-backend}
+    audience: ${JWT_AUDIENCE:dungeontasks-ios}
+    jwt-secret: ${JWT_SECRET}
+    access-token-ttl: 15m
+    session-ttl: 30d
+    google-client-id: ${GOOGLE_WEB_CLIENT_ID:}
+    google-jwk-set-uri: ${GOOGLE_JWK_SET_URI:https://www.googleapis.com/oauth2/v3/certs}
+
 server:
   port: ${SERVER_PORT:8080}

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="001-auth-profile" author="dungeontasks">
+        <createTable tableName="app_user">
+            <column name="user_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_app_user"/>
+            </column>
+            <column name="username" type="varchar(24)"/>
+            <column name="created_at" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="app_user" columnNames="username"
+                             constraintName="uq_app_user_username"/>
+        <sql>ALTER TABLE app_user ADD CONSTRAINT ck_app_user_username_format
+            CHECK (username IS NULL OR username ~ '^[a-z0-9]{3,24}$')</sql>
+
+        <createTable tableName="external_identity">
+            <column name="identity_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_external_identity"/>
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="provider" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="provider_subject" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(320)"/>
+            <column name="avatar_url" type="text"/>
+            <column name="created_at" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="external_identity" baseColumnNames="user_id"
+                                 referencedTableName="app_user" referencedColumnNames="user_id"
+                                 constraintName="fk_external_identity_user" onDelete="CASCADE"/>
+        <addUniqueConstraint tableName="external_identity" columnNames="provider,provider_subject"
+                             constraintName="uq_external_identity_provider_subject"/>
+        <createIndex tableName="external_identity" indexName="ix_external_identity_user">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createTable tableName="auth_session">
+            <column name="session_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_auth_session"/>
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="refresh_token_hash" type="char(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expires_at" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_rotated_at" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revoked_at" type="timestamp with time zone"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="auth_session" baseColumnNames="user_id"
+                                 referencedTableName="app_user" referencedColumnNames="user_id"
+                                 constraintName="fk_auth_session_user" onDelete="CASCADE"/>
+        <addUniqueConstraint tableName="auth_session" columnNames="refresh_token_hash"
+                             constraintName="uq_auth_session_refresh_hash"/>
+        <createIndex tableName="auth_session" indexName="ix_auth_session_user">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

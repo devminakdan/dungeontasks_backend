@@ -27,6 +27,10 @@ services:
       DB_USERNAME: ${POSTGRES_USER:-dungeontasks}
       DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       SERVER_PORT: 8080
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env (at least 32 UTF-8 bytes)}
+      JWT_ISSUER: ${JWT_ISSUER:-dungeontasks-backend}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-dungeontasks-ios}
+      GOOGLE_WEB_CLIENT_ID: ${GOOGLE_WEB_CLIENT_ID:-}
     ports:
       - "${BACKEND_PORT:-8080}:8080"
     depends_on:
