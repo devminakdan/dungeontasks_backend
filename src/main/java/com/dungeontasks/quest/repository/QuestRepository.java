@@ -186,6 +186,15 @@ public class QuestRepository {
                 .execute();
     }
 
+    public void markCompleted(UUID questID, Instant now) {
+        dsl.update(QUEST)
+                .set(QUEST_STATUS, "COMPLETED")
+                .set(QUEST_COMPLETED_AT, now.atOffset(java.time.ZoneOffset.UTC))
+                .set(QUEST_UPDATED_AT, now.atOffset(java.time.ZoneOffset.UTC))
+                .where(QUEST_ID.eq(questID))
+                .execute();
+    }
+
     private Quest map(Record record) {
         OffsetDateTime deadline = record.get(QUEST_DEADLINE);
         OffsetDateTime completedAt = record.get(QUEST_COMPLETED_AT);

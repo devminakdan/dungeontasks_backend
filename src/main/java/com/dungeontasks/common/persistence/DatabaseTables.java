@@ -68,6 +68,34 @@ public final class DatabaseTables {
     public static final Field<OffsetDateTime> QUEST_COMPLETED_AT = DSL.field(
             DSL.name("quest", "completed_at"), SQLDataType.OFFSETDATETIME);
 
+    public static final Table<?> CHARACTER = DSL.table(DSL.name("character"));
+    public static final Field<UUID> CHARACTER_ID = DSL.field(DSL.name("character", "character_id"), SQLDataType.UUID);
+    public static final Field<UUID> CHARACTER_USER_ID = DSL.field(DSL.name("character", "user_id"), SQLDataType.UUID);
+    public static final Field<Integer> CHARACTER_LEVEL = DSL.field(DSL.name("character", "level"), SQLDataType.INTEGER);
+    public static final Field<Long> CHARACTER_XP = DSL.field(DSL.name("character", "xp"), SQLDataType.BIGINT);
+    public static final Field<Long> CHARACTER_GOLD = DSL.field(DSL.name("character", "gold"), SQLDataType.BIGINT);
+    public static final Field<Integer> CHARACTER_ATTACK = DSL.field(DSL.name("character", "attack"), SQLDataType.INTEGER);
+    public static final Field<Integer> CHARACTER_DEFENSE = DSL.field(DSL.name("character", "defense"), SQLDataType.INTEGER);
+    public static final Field<Integer> CHARACTER_LUCK = DSL.field(DSL.name("character", "luck"), SQLDataType.INTEGER);
+    public static final Field<OffsetDateTime> CHARACTER_CREATED_AT = DSL.field(
+            DSL.name("character", "created_at"), SQLDataType.OFFSETDATETIME);
+    public static final Field<OffsetDateTime> CHARACTER_UPDATED_AT = DSL.field(
+            DSL.name("character", "updated_at"), SQLDataType.OFFSETDATETIME);
+
+    public static final Table<?> QUEST_COMPLETION = DSL.table(DSL.name("quest_completion"));
+    public static final Field<UUID> COMPLETION_ID = DSL.field(DSL.name("quest_completion", "completion_id"), SQLDataType.UUID);
+    public static final Field<UUID> COMPLETION_QUEST_ID = DSL.field(DSL.name("quest_completion", "quest_id"), SQLDataType.UUID);
+    public static final Field<UUID> COMPLETION_USER_ID = DSL.field(DSL.name("quest_completion", "user_id"), SQLDataType.UUID);
+    public static final Field<Integer> COMPLETION_XP_EARNED = DSL.field(DSL.name("quest_completion", "xp_earned"), SQLDataType.INTEGER);
+    public static final Field<Integer> COMPLETION_GOLD_EARNED = DSL.field(DSL.name("quest_completion", "gold_earned"), SQLDataType.INTEGER);
+    public static final Field<Integer> COMPLETION_LEVEL_BEFORE = DSL.field(DSL.name("quest_completion", "level_before"), SQLDataType.INTEGER);
+    public static final Field<Integer> COMPLETION_LEVEL_AFTER = DSL.field(DSL.name("quest_completion", "level_after"), SQLDataType.INTEGER);
+    public static final Field<String> COMPLETION_MONSTER_TYPE = DSL.field(DSL.name("quest_completion", "monster_type"), SQLDataType.VARCHAR);
+    public static final Field<Integer> COMPLETION_MONSTER_MAX_HP = DSL.field(DSL.name("quest_completion", "monster_max_hp"), SQLDataType.INTEGER);
+    public static final Field<String> COMPLETION_HITS_JSON = DSL.field(DSL.name("quest_completion", "hits_json"), SQLDataType.CLOB);
+    public static final Field<OffsetDateTime> COMPLETION_COMPLETED_AT = DSL.field(
+            DSL.name("quest_completion", "completed_at"), SQLDataType.OFFSETDATETIME);
+
     private DatabaseTables() {
     }
 }

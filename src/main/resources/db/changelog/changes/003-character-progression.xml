@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="003-character-progression" author="dungeontasks">
+        <createTable tableName="character">
+            <column name="character_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_character"/>
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="level" type="integer" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="xp" type="bigint" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="gold" type="bigint" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="attack" type="integer" defaultValueNumeric="10">
+                <constraints nullable="false"/>
+            </column>
+            <column name="defense" type="integer" defaultValueNumeric="5">
+                <constraints nullable="false"/>
+            </column>
+            <column name="luck" type="integer" defaultValueNumeric="5">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="character" columnNames="user_id"
+                             constraintName="uq_character_user"/>
+        <addForeignKeyConstraint baseTableName="character" baseColumnNames="user_id"
+                                 referencedTableName="app_user" referencedColumnNames="user_id"
+                                 constraintName="fk_character_user" onDelete="CASCADE"/>
+
+        <createTable tableName="quest_completion">
+            <column name="completion_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_quest_completion"/>
+            </column>
+            <column name="quest_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="xp_earned" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="gold_earned" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="level_before" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="level_after" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="monster_type" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="monster_max_hp" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="hits_json" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="completed_at" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="quest_completion" columnNames="quest_id"
+                             constraintName="uq_quest_completion_quest"/>
+        <addForeignKeyConstraint baseTableName="quest_completion" baseColumnNames="quest_id"
+                                 referencedTableName="quest" referencedColumnNames="quest_id"
+                                 constraintName="fk_quest_completion_quest" onDelete="CASCADE"/>
+    </changeSet>
+</databaseChangeLog>

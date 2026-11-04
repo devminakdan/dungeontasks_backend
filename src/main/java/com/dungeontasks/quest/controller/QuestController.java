@@ -10,6 +10,8 @@ import com.dungeontasks.quest.dto.request.CreateQuestRequest;
 import com.dungeontasks.quest.dto.request.UpdateQuestRequest;
 import com.dungeontasks.quest.dto.response.QuestListResponse;
 import com.dungeontasks.quest.dto.response.QuestResponse;
+import com.dungeontasks.quest.dto.response.BattleResultResponse;
+import com.dungeontasks.quest.service.BattleEngineService;
 import com.dungeontasks.quest.service.QuestService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -42,9 +44,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class QuestController {
 
     private final QuestService questService;
+    private final com.dungeontasks.quest.service.BattleEngineService battleEngineService;
 
-    public QuestController(QuestService questService) {
+    public QuestController(QuestService questService, com.dungeontasks.quest.service.BattleEngineService battleEngineService) {
         this.questService = questService;
+        this.battleEngineService = battleEngineService;
     }
 
     @GetMapping
@@ -134,6 +138,29 @@ public class QuestController {
             @Valid @RequestBody UpdateQuestRequest request
     ) {
         return ResponseEntity.ok(questService.update(currentUser.userID(), questID, request));
+    }
+
+    @PostMapping("/{questID}/complete")
+    @Operation(operationId = "completeQuest", summary = "Complete a quest")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Battle result",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = BattleResultResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Bad request",
+                    content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden",
+                    content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "404", description = "Not found",
+                    content = @Content(mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
+                            schema = @Schema(implementation = ProblemDetail.class)))
+    })
+    public ResponseEntity<BattleResultResponse> completeQuest(
+            @AuthenticationPrincipal CurrentUser currentUser,
+            @PathVariable UUID questID
+    ) {
+        return ResponseEntity.ok(battleEngineService.complete(currentUser.userID(), questID));
     }
 
     @DeleteMapping("/{questID}")
